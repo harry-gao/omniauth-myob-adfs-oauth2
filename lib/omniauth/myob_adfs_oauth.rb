@@ -1,0 +1,1 @@
+require  File.join('omniauth', 'strategies', 'myob_adfs_oauth')
