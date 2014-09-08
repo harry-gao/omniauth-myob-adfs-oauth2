@@ -13,27 +13,23 @@ module OmniAuth
       option :client_options, {
         :site          => 'https://adfs.myob.com.au',
         :authorize_url => '/adfs/oauth2/authorize',
-        :token_url => 'adfs/oauth2/token',
+        :token_url => '/adfs/oauth2/token',
       }
 
       option :authorize_options, [:resource]
 
-      uid { raw_info['uid'] }
+      uid { raw_info['email'] }
 
       info do
         {
-          :email => raw_info['username']
-        }
-      end
-
-       extra do
-        {
-          'raw_info' => raw_info
+          :email => raw_info['email']
         }
       end
 
       def raw_info
-        @raw_info ||= access_token['user']
+        return @raw_info if @raw_info
+        token = Base64.decode64(access_token.token)
+        @raw_info = JSON.parse(token.scan(/({[^}]*})/).second.first)
       end
 
     end
